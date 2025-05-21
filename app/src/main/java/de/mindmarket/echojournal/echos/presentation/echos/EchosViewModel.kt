@@ -26,6 +26,10 @@ class EchosViewModel(): ViewModel() {
             is EchosAction.OnRemoveFilters -> {}
             EchosAction.OnTopicChipClick -> {}
             EchosAction.OnSettingsClick -> {}
+            EchosAction.OnDismissMoodDropdown -> {}
+            EchosAction.OnDismissTopicDropdown -> {}
+            is EchosAction.OnFilterByMoodClick -> {}
+            is EchosAction.OnFilterByTopicClick -> {}
         }
     }
 }
