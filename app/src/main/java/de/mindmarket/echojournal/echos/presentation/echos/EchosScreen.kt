@@ -15,16 +15,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.EchoJournalTheme
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.bgGradient
+import de.mindmarket.echojournal.echos.presentation.echos.components.EchoFilterRow
 import de.mindmarket.echojournal.echos.presentation.echos.components.EchoRecordFloatingActionButton
 import de.mindmarket.echojournal.echos.presentation.echos.components.EchosEmptyBackground
 import de.mindmarket.echojournal.echos.presentation.echos.components.EchosTopBar
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun EchosScreenRoot(
-    viewModel: EchosViewModel = koinViewModel<EchosViewModel>()
+    viewModel: EchosViewModel = viewModel<EchosViewModel>()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -64,6 +65,18 @@ fun EchosScreen(
                     brush = MaterialTheme.colorScheme.bgGradient
                 )
         ) {
+            EchoFilterRow(
+                moodChipContent = state.moodChipContent,
+                hasActiveTopicFilters = state.hasActiveTopicFilters,
+                hasActiveMoodFilters = state.hasActiveMoodFilters,
+                selectedEchoFilterChip = state.selectedEchoFilterChip,
+                topics = state.topics,
+                moods = state.moods,
+                topicChipTitle = state.topicChipTitle,
+                onAction = onAction,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
             when {
                 state.isLoadingData -> {
                     CircularProgressIndicator(
