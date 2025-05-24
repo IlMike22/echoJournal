@@ -1,6 +1,5 @@
 package de.mindmarket.echojournal.echos.presentation.echos
 
-import android.adservices.topics.Topic
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.mindmarket.echojournal.R
@@ -38,11 +37,12 @@ class EchosViewModel() : ViewModel() {
 
             EchosAction.OnFabLongClick -> {}
             is EchosAction.OnRemoveFilters -> {
-                when(action.filterType) {
+                when (action.filterType) {
                     EchoFilterChip.MOODS -> selectedMoodFilters.update { emptyList() }
                     EchoFilterChip.TOPICS -> selectedTopicsFilters.update { emptyList() }
                 }
             }
+
             EchosAction.OnTopicChipClick -> {
                 _state.update {
                     it.copy(
@@ -70,7 +70,7 @@ class EchosViewModel() : ViewModel() {
             }
 
             is EchosAction.OnFilterByTopicClick -> {
-               toggleTopicFilter(action.topic)
+                toggleTopicFilter(action.topic)
             }
         }
     }
@@ -120,12 +120,12 @@ class EchosViewModel() : ViewModel() {
     }
 
     private fun List<String>.deriveTopicsToText(): UiText {
-        return when(size) {
+        return when (size) {
             0 -> UiText.StringResource(R.string.all_topics)
             1 -> UiText.Dynamic(this.first())
             2 -> UiText.Dynamic("${this.first()}, ${this.last()}")
             else -> {
-                val extraElementCount = size-2
+                val extraElementCount = size - 2
                 UiText.Dynamic("${this.first()}, ${this[1]} +$extraElementCount")
             }
         }
@@ -138,11 +138,12 @@ class EchosViewModel() : ViewModel() {
         val icons = this.map { it.iconSet.fill }
         val moodNames = this.map { it.title }
 
-        return when(size) {
+        return when (size) {
             1 -> MoodChipContent(
                 iconsRes = icons,
                 title = moodNames.first()
             )
+
             2 -> MoodChipContent(
                 iconsRes = icons,
                 title = UiText.Combined(
@@ -150,6 +151,7 @@ class EchosViewModel() : ViewModel() {
                     uiTexts = moodNames.toTypedArray()
                 )
             )
+
             else -> {
                 val extraElementCount = size - 2
                 MoodChipContent(
