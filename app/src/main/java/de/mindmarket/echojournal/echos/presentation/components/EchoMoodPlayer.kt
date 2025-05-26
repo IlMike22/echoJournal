@@ -25,6 +25,7 @@ import de.mindmarket.echojournal.core.presentation.designsystem.theme.MoodPrimar
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.MoodPrimary80
 import de.mindmarket.echojournal.core.presentation.util.formatMMSS
 import de.mindmarket.echojournal.echos.presentation.echos.models.PlaybackState
+import de.mindmarket.echojournal.echos.presentation.echos.models.TrackSizeInfo
 import de.mindmarket.echojournal.echos.presentation.models.MoodUi
 import java.lang.ProcessBuilder.Redirect.to
 import kotlin.random.Random
@@ -41,6 +42,7 @@ fun EchoMoodPlayer(
     powerRatios: List<Float>,
     onPlayClick: () -> Unit,
     onPauseClick: () -> Unit,
+    onTrackSizeAvailable: (TrackSizeInfo) -> Unit,
     modifier: Modifier = Modifier,
     amplitudeBarWidth: Dp = 5.dp,
     amplitudeBarSpacing: Dp = 4.dp
@@ -126,7 +128,8 @@ private fun EchoMoodPlayerPreview() {
             powerRatios = ratios,
             onPlayClick = {},
             onPauseClick = {},
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            onTrackSizeAvailable = {}
         )
     }
 }
