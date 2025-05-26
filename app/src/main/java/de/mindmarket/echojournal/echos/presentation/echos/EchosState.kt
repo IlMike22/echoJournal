@@ -4,11 +4,14 @@ import de.mindmarket.echojournal.R
 import de.mindmarket.echojournal.core.presentation.designsystem.dropdowns.Selectable
 import de.mindmarket.echojournal.core.presentation.designsystem.dropdowns.Selectable.Companion.asUnselectedItems
 import de.mindmarket.echojournal.core.presentation.util.UiText
+import de.mindmarket.echojournal.echos.presentation.echos.models.EchoDaySection
 import de.mindmarket.echojournal.echos.presentation.echos.models.EchoFilterChip
 import de.mindmarket.echojournal.echos.presentation.echos.models.MoodChipContent
+import de.mindmarket.echojournal.echos.presentation.models.EchoUi
 import de.mindmarket.echojournal.echos.presentation.models.MoodUi
 
 data class EchosState(
+    val echos: Map<UiText, List<EchoUi>> = emptyMap(),
     val hasEchosRecorded: Boolean = false,
     val hasActiveTopicFilters: Boolean = false,
     val hasActiveMoodFilters: Boolean = false,
@@ -18,4 +21,10 @@ data class EchosState(
     val moodChipContent: MoodChipContent = MoodChipContent(),
     val selectedEchoFilterChip: EchoFilterChip? = null,
     val topicChipTitle: UiText = UiText.StringResource(R.string.all_topics)
-)
+) {
+    val echoDaySections = echos
+        .toList()
+        .map { (dateHeader, echos) ->
+            EchoDaySection(dateHeader, echos)
+        }
+}
