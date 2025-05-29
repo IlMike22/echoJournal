@@ -106,7 +106,7 @@ fun EchosScreen(
                             onAction(EchosAction.OnPauseClick)
                         },
                         onTrackSizeAvailable = { trackSize ->
-                            onAction(EchosAction.OnTrackSizeAvailable)
+                            onAction(EchosAction.OnTrackSizeAvailable(trackSize))
                         }
                     )
                 }
