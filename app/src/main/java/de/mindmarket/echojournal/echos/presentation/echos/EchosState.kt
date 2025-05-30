@@ -4,6 +4,7 @@ import de.mindmarket.echojournal.R
 import de.mindmarket.echojournal.core.presentation.designsystem.dropdowns.Selectable
 import de.mindmarket.echojournal.core.presentation.designsystem.dropdowns.Selectable.Companion.asUnselectedItems
 import de.mindmarket.echojournal.core.presentation.util.UiText
+import de.mindmarket.echojournal.echos.presentation.echos.models.AudioCaptureMethod
 import de.mindmarket.echojournal.echos.presentation.echos.models.EchoDaySection
 import de.mindmarket.echojournal.echos.presentation.echos.models.EchoFilterChip
 import de.mindmarket.echojournal.echos.presentation.echos.models.MoodChipContent
@@ -12,6 +13,7 @@ import de.mindmarket.echojournal.echos.presentation.models.MoodUi
 
 data class EchosState(
     val echos: Map<UiText, List<EchoUi>> = emptyMap(),
+    val currentCaptureMethod: AudioCaptureMethod? = null,
     val hasEchosRecorded: Boolean = false,
     val hasActiveTopicFilters: Boolean = false,
     val hasActiveMoodFilters: Boolean = false,
