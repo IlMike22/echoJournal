@@ -28,10 +28,11 @@ import de.mindmarket.echojournal.echos.presentation.echos.components.EchoRecordF
 import de.mindmarket.echojournal.echos.presentation.echos.components.EchosEmptyBackground
 import de.mindmarket.echojournal.echos.presentation.echos.components.EchosTopBar
 import de.mindmarket.echojournal.echos.presentation.echos.models.AudioCaptureMethod
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun EchosScreenRoot(
-    viewModel: EchosViewModel = viewModel<EchosViewModel>()
+    viewModel: EchosViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
