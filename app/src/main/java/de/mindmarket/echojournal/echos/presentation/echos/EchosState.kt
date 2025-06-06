@@ -8,6 +8,7 @@ import de.mindmarket.echojournal.echos.presentation.echos.models.AudioCaptureMet
 import de.mindmarket.echojournal.echos.presentation.echos.models.EchoDaySection
 import de.mindmarket.echojournal.echos.presentation.echos.models.EchoFilterChip
 import de.mindmarket.echojournal.echos.presentation.echos.models.MoodChipContent
+import de.mindmarket.echojournal.echos.presentation.echos.models.RecordingState
 import de.mindmarket.echojournal.echos.presentation.models.EchoUi
 import de.mindmarket.echojournal.echos.presentation.models.MoodUi
 import java.util.Locale
@@ -22,6 +23,7 @@ data class EchosState(
     val hasActiveTopicFilters: Boolean = false,
     val hasActiveMoodFilters: Boolean = false,
     val isLoadingData: Boolean = false,
+    val recordingState: RecordingState = RecordingState.NOT_RECORDING,
     val moods: List<Selectable<MoodUi>> = emptyList(),
     val topics: List<Selectable<String>> = listOf("Love","Happy","Work").asUnselectedItems(),
     val moodChipContent: MoodChipContent = MoodChipContent(),

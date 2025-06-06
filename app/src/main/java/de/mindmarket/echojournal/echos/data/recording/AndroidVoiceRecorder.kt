@@ -173,6 +173,7 @@ class AndroidVoiceRecorder(
 
     override fun pause() {
         if (!isRecording || isPaused) return
+        isPaused = true
         recorder?.pause()
         durationJob?.cancel()
         amplitudeJob?.cancel()

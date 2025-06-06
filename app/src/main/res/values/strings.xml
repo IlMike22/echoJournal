@@ -49,4 +49,7 @@
     <string name="playing">Playing</string>
     <string name="paused">Paused</string>
     <string name="stopped">stopped</string>
+    <string name="pause_recording">pause recording</string>
+    <string name="finish_recording">finish recording</string>
+    <string name="resume_recording">resume recording</string>
 </resources>
