@@ -10,10 +10,14 @@ import de.mindmarket.echojournal.echos.presentation.echos.models.EchoFilterChip
 import de.mindmarket.echojournal.echos.presentation.echos.models.MoodChipContent
 import de.mindmarket.echojournal.echos.presentation.models.EchoUi
 import de.mindmarket.echojournal.echos.presentation.models.MoodUi
+import java.util.Locale
+import kotlin.math.roundToInt
+import kotlin.time.Duration
 
 data class EchosState(
     val echos: Map<UiText, List<EchoUi>> = emptyMap(),
     val currentCaptureMethod: AudioCaptureMethod? = null,
+    val recordingElapsedDuration: Duration = Duration.ZERO,
     val hasEchosRecorded: Boolean = false,
     val hasActiveTopicFilters: Boolean = false,
     val hasActiveMoodFilters: Boolean = false,
@@ -28,5 +32,18 @@ data class EchosState(
         .toList()
         .map { (dateHeader, echos) ->
             EchoDaySection(dateHeader, echos)
+        }
+
+    val formattedRecordDuration:String
+        get() {
+            val minutes = (recordingElapsedDuration.inWholeMinutes % 60).toInt()
+            val seconds = (recordingElapsedDuration.inWholeSeconds % 60).toInt()
+            val centiSeconds = (recordingElapsedDuration.inWholeMilliseconds % 1000 / 10.0).roundToInt()
+
+            return String.format(
+                locale = Locale.US,
+                format = "%02d:%02d:%02d",
+                minutes, seconds, centiSeconds
+            )
         }
 }
