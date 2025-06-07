@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 
 class EchosViewModel(
@@ -47,7 +46,7 @@ class EchosViewModel(
 
     fun onAction(action: EchosAction) {
         when (action) {
-            EchosAction.OnFabClick -> {
+            EchosAction.OnRecordFabClick -> {
                 requestAudioPermission()
                 _state.update {
                     it.copy(
@@ -56,13 +55,17 @@ class EchosViewModel(
                 }
             }
 
-            EchosAction.OnFabLongClick -> {
+            EchosAction.OnRequestPermissionQuickRecording -> {
                 requestAudioPermission()
                 _state.update {
                     it.copy(
                         currentCaptureMethod = AudioCaptureMethod.QUICK
                     )
                 }
+            }
+
+            EchosAction.OnRecordButtonLongClick -> {
+                startRecording(captureMethod = AudioCaptureMethod.QUICK)
             }
 
             is EchosAction.OnRemoveFilters -> {

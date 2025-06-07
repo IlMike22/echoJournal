@@ -40,6 +40,7 @@ import de.mindmarket.echojournal.core.presentation.designsystem.theme.EchoJourna
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.Microphone
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.Pause
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.buttonGradient
+import de.mindmarket.echojournal.core.presentation.designsystem.theme.buttonGradientPressed
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.primary90
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.primary95
 
@@ -141,47 +142,64 @@ fun SheetContent(
                 )
             }
 
-            val interactionSource = remember {
-                MutableInteractionSource()
-            }
-            val isPressed by interactionSource.collectIsPressedAsState()
+            EchoBubbleFloatingActionButton(
+                showBubble = isRecording,
+                onClick = if (isRecording) onCompleteRecording else onResumeClick,
+                icon = {
+                    Icon(
+                        imageVector = if (isRecording) Icons.Default.Check
+                        else Icons.Filled.Microphone,
+                        contentDescription = if (isRecording)
+                            stringResource(R.string.finish_recording) else
+                            stringResource(R.string.resume_recording),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                },
+                primaryButtonSize = 72.dp
+            )
 
-            Box(
-                modifier = Modifier
-                    .size(primaryBubbleSize)
-                    .background(
-                        color = if (isRecording) MaterialTheme.colorScheme.primary95
-                        else Color.Transparent,
-                        shape = CircleShape
-                    )
-                    .padding(10.dp)
-                    .background(
-                        color = if (isRecording) MaterialTheme.colorScheme.primary90
-                        else Color.Transparent,
-                        shape = CircleShape
-                    )
-                    .padding(16.dp)
-                    .background(
-                        brush = MaterialTheme.colorScheme.buttonGradient,
-                        shape = CircleShape
-                    )
-                    .clip(CircleShape)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = LocalIndication.current,
-                        onClick = if (isRecording) onCompleteRecording else onResumeClick
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = if (isRecording) Icons.Default.Check
-                    else Icons.Filled.Microphone,
-                    contentDescription = if (isRecording)
-                        stringResource(R.string.finish_recording) else
-                        stringResource(R.string.resume_recording),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
+//            val interactionSource = remember { // TODO Delete later on
+//                MutableInteractionSource()
+//            }
+//            val isPressed by interactionSource.collectIsPressedAsState()
+
+//            Box(
+//                modifier = Modifier
+//                    .size(primaryBubbleSize)
+//                    .background(
+//                        color = if (isRecording) MaterialTheme.colorScheme.primary95
+//                        else Color.Transparent,
+//                        shape = CircleShape
+//                    )
+//                    .padding(10.dp)
+//                    .background(
+//                        color = if (isRecording) MaterialTheme.colorScheme.primary90
+//                        else Color.Transparent,
+//                        shape = CircleShape
+//                    )
+//                    .padding(16.dp)
+//                    .background(
+//                        brush = if (isPressed) MaterialTheme.colorScheme.buttonGradientPressed
+//                        else MaterialTheme.colorScheme.buttonGradient,
+//                        shape = CircleShape
+//                    )
+//                    .clip(CircleShape)
+//                    .clickable(
+//                        interactionSource = interactionSource,
+//                        indication = LocalIndication.current,
+//                        onClick = if (isRecording) onCompleteRecording else onResumeClick
+//                    ),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Icon(
+//                    imageVector = if (isRecording) Icons.Default.Check
+//                    else Icons.Filled.Microphone,
+//                    contentDescription = if (isRecording)
+//                        stringResource(R.string.finish_recording) else
+//                        stringResource(R.string.resume_recording),
+//                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+//                )
+//            }
 
             FilledIconButton(
                 onClick = if (isRecording) {
