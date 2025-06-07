@@ -27,6 +27,7 @@ import de.mindmarket.echojournal.core.presentation.designsystem.theme.EchoJourna
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.bgGradient
 import de.mindmarket.echojournal.core.presentation.util.ObserveAsEvents
 import de.mindmarket.echojournal.core.presentation.util.isAppInForeground
+import de.mindmarket.echojournal.echos.domain.recording.RecordingDetails
 import de.mindmarket.echojournal.echos.presentation.echos.EchosAction.OnAudioPermissionGranted
 import de.mindmarket.echojournal.echos.presentation.echos.components.EchoFilterRow
 import de.mindmarket.echojournal.echos.presentation.echos.components.EchoList
@@ -41,7 +42,8 @@ import timber.log.Timber
 
 @Composable
 fun EchosScreenRoot(
-    viewModel: EchosViewModel = koinViewModel()
+    onNavigateToCreateEcho: (RecordingDetails) -> Unit,
+    viewModel: EchosViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -60,8 +62,8 @@ fun EchosScreenRoot(
             EchosEvent.RequestAudioPermission -> {
                 permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
             }
-            EchosEvent.OnDoneRecording -> {
-                Timber.d("Recording successful!")
+            is EchosEvent.OnDoneRecording -> {
+               onNavigateToCreateEcho(event.details)
             }
             EchosEvent.RecordingTooShort -> {
                 Toast.makeText(context, context.getString(R.string.audio_recording_was_too_short),
