@@ -96,3 +96,9 @@ val ColorScheme.primary90: Color
 
 val ColorScheme.primary95: Color
     get() = Primary95
+
+val ColorScheme.secondary70: Color
+    get() = Secondary70
+
+val ColorScheme.secondary95: Color
+    get() = Secondary95
