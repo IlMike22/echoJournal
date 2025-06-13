@@ -2,6 +2,7 @@ package de.mindmarket.echojournal.echos.di
 
 import de.mindmarket.echojournal.echos.data.recording.AndroidVoiceRecorder
 import de.mindmarket.echojournal.echos.domain.recording.VoiceRecorder
+import de.mindmarket.echojournal.echos.presentation.create_echo.CreateEchoViewModel
 import de.mindmarket.echojournal.echos.presentation.echos.EchosViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.viewModelOf
@@ -17,4 +18,5 @@ val echosModule = module {
     } bind VoiceRecorder::class
 
     viewModelOf(::EchosViewModel)
+    viewModelOf(::CreateEchoViewModel)
 }

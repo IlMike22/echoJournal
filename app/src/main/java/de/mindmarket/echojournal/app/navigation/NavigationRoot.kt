@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import de.mindmarket.echojournal.echos.presentation.create_echo.CreateEchoScreenRoot
 import de.mindmarket.echojournal.echos.presentation.echos.EchosScreenRoot
 import de.mindmarket.echojournal.echos.presentation.util.toCreateEchoRoute
 
@@ -29,13 +30,7 @@ fun NavigationRoot(
         }
 
         composable<NavigationRoute.CreateEcho> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Create echo screen")
-            }
+            CreateEchoScreenRoot()
         }
     }
 }

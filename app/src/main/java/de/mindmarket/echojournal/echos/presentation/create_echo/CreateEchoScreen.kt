@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +44,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.mindmarket.echojournal.R
 import de.mindmarket.echojournal.core.presentation.designsystem.buttons.PrimaryButton
 import de.mindmarket.echojournal.core.presentation.designsystem.buttons.SecondaryButton
@@ -51,15 +53,20 @@ import de.mindmarket.echojournal.core.presentation.designsystem.theme.EchoJourna
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.secondary70
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.secondary95
 import de.mindmarket.echojournal.echos.presentation.components.EchoMoodPlayer
+import de.mindmarket.echojournal.echos.presentation.create_echo.components.SelectMoodSheet
 import de.mindmarket.echojournal.echos.presentation.models.MoodUi
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CreateEchoScreenRoot(
-    modifier: Modifier = Modifier,
     viewModel: CreateEchoViewModel = koinViewModel<CreateEchoViewModel>()
 ) {
 
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    CreateEchoScreen(
+        state = state,
+        onAction = viewModel::onAction
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -247,6 +254,15 @@ fun CreateEchoScreen(
                     }
                 )
             }
+        }
+
+        if (state.showMoodSelector) {
+            SelectMoodSheet(
+                selectedMood = state.selectedMood,
+                onMoodClick = { onAction(CreateEchoAction.OnMoodClick(it)) },
+                onDismiss = { onAction(CreateEchoAction.OnDismissMoodSelector) },
+                onConfirmClick = { onAction(CreateEchoAction.OnConfirmMood) }
+            )
         }
     }
 }
