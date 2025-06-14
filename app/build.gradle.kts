@@ -66,6 +66,7 @@ dependencies {
     // Database - Room
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
+    implementation(libs.androidx.benchmark.macro)
     ksp(libs.room.compiler)
 
     // DI - Koin

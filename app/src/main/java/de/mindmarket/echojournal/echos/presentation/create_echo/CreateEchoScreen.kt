@@ -53,6 +53,7 @@ import de.mindmarket.echojournal.core.presentation.designsystem.theme.EchoJourna
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.secondary70
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.secondary95
 import de.mindmarket.echojournal.echos.presentation.components.EchoMoodPlayer
+import de.mindmarket.echojournal.echos.presentation.create_echo.components.EchoTopicsRow
 import de.mindmarket.echojournal.echos.presentation.create_echo.components.SelectMoodSheet
 import de.mindmarket.echojournal.echos.presentation.models.MoodUi
 import org.koin.androidx.compose.koinViewModel
@@ -77,6 +78,7 @@ fun CreateEchoScreen(
     modifier: Modifier = Modifier
 ) {
     Scaffold(
+        modifier = modifier,
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             CenterAlignedTopAppBar(
@@ -188,7 +190,25 @@ fun CreateEchoScreen(
                 }
             )
 
-            // TODO insert topics flowrow
+            EchoTopicsRow(
+                topics = state.topics,
+                addTopicText = state.addTopicText,
+                showCreateTopicOption = state.showCreateTopicOption,
+                showTopicSuggestions = state.showTopicSuggestions,
+                searchResults = state.searchResults,
+                onTopicClick = {
+                    onAction(CreateEchoAction.OnTopicClick(it))
+                },
+                onDismissTopicSuggestions = {
+                    onAction(CreateEchoAction.OnDismissTopicSuggestions)
+                },
+                onRemoveTopicClick = {
+                    onAction(CreateEchoAction.OnRemoveTopicClick(it))
+                },
+                onAddTopicTextChange = {
+                    onAction(CreateEchoAction.OnAddTopicTextChange(it))
+                }
+            )
 
             Row(
                 modifier = Modifier
