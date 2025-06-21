@@ -1,5 +1,6 @@
 package de.mindmarket.echojournal.echos.presentation.create_echo
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -40,6 +41,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -55,6 +57,7 @@ import de.mindmarket.echojournal.core.presentation.designsystem.textfields.Trans
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.EchoJournalTheme
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.secondary70
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.secondary95
+import de.mindmarket.echojournal.core.presentation.util.ObserveAsEvents
 import de.mindmarket.echojournal.echos.presentation.components.EchoMoodPlayer
 import de.mindmarket.echojournal.echos.presentation.create_echo.components.EchoTopicsRow
 import de.mindmarket.echojournal.echos.presentation.create_echo.components.SelectMoodSheet
@@ -67,6 +70,20 @@ fun CreateEchoScreenRoot(
     viewModel: CreateEchoViewModel = koinViewModel<CreateEchoViewModel>()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            CreateEchoEvent.FailedToSaveFile -> {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.error_could_not_save_file),
+                    Toast.LENGTH_LONG
+                ).show()
+                onConfirmLeave()
+            }
+        }
+    }
+
     CreateEchoScreen(
         state = state,
         onAction = viewModel::onAction,

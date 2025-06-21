@@ -56,4 +56,5 @@
     <string name="discard_recording">Discard recording?</string>
     <string name="cannot_be_undone">This cannot be undone.</string>
     <string name="confirm_discard">Discard</string>
+    <string name="error_could_not_save_file">Ups saving the file failed.</string>
 </resources>
