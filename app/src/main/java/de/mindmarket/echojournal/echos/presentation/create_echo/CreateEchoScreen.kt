@@ -1,5 +1,6 @@
 package de.mindmarket.echojournal.echos.presentation.create_echo
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
@@ -28,6 +30,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -60,13 +63,14 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CreateEchoScreenRoot(
+    onConfirmLeave: () -> Unit,
     viewModel: CreateEchoViewModel = koinViewModel<CreateEchoViewModel>()
 ) {
-
     val state by viewModel.state.collectAsStateWithLifecycle()
     CreateEchoScreen(
         state = state,
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
+        onConfirmLeave = onConfirmLeave
     )
 }
 
@@ -75,8 +79,15 @@ fun CreateEchoScreenRoot(
 fun CreateEchoScreen(
     state: CreateEchoState,
     onAction: (CreateEchoAction) -> Unit,
+    onConfirmLeave: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    BackHandler(
+        enabled = !state.showConfirmLeaveDialog
+    ) {
+        onAction(CreateEchoAction.OnGoBack)
+    }
+
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.surface,
@@ -284,6 +295,39 @@ fun CreateEchoScreen(
                 onConfirmClick = { onAction(CreateEchoAction.OnConfirmMood) }
             )
         }
+
+        if (state.showConfirmLeaveDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    onAction(CreateEchoAction.OnDismissConfirmLeaveDialog)
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = onConfirmLeave
+                    ) {
+                        Text(
+                            text = stringResource(R.string.discard_recording),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            onAction(CreateEchoAction.OnDismissConfirmLeaveDialog)
+                        }
+                    ) {
+                        Text(text = stringResource(R.string.confirm_discard))
+                    }
+                },
+                title = {
+                    Text(text = stringResource(R.string.discard_recording))
+                },
+                text = {
+                    Text(text = stringResource(R.string.cannot_be_undone))
+                }
+            )
+        }
     }
 }
 
@@ -296,7 +340,8 @@ private fun CreateEchoScreenPreview() {
                 mood = MoodUi.EXCITED,
                 canSaveEcho = true
             ),
-            onAction = {}
+            onAction = {},
+            onConfirmLeave = {}
         )
     }
 }

@@ -21,4 +21,6 @@ sealed interface CreateEchoAction {
     data class OnTrackSizeAvailable(val trackSizeInfo: TrackSizeInfo) : CreateEchoAction
     data class OnRemoveTopicClick(val topic: String) : CreateEchoAction
     data class OnAddTopicTextChange(val text:String): CreateEchoAction
+    data object OnGoBack: CreateEchoAction
+    data object OnDismissConfirmLeaveDialog: CreateEchoAction
 }

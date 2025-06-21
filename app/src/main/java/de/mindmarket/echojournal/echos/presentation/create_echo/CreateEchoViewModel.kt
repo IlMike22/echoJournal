@@ -32,12 +32,10 @@ class CreateEchoViewModel : ViewModel() {
     fun onAction(action: CreateEchoAction) {
         when (action) {
             CreateEchoAction.OnSelectMoodClick -> onSelectMoodClick()
-            CreateEchoAction.OnCancelClick -> TODO()
             CreateEchoAction.OnConfirmMood -> onConfirmMood()
             CreateEchoAction.OnDismissMoodSelector -> onDismissMoodSelector()
             is CreateEchoAction.OnMoodClick -> onMoodClick(action.moodUi)
             CreateEchoAction.OnDismissTopicSuggestions -> onDismissTopicSuggestions()
-            CreateEchoAction.OnNavigateBackClick -> TODO()
             is CreateEchoAction.OnNoteTextChange -> TODO()
             CreateEchoAction.OnPauseAudioClick -> TODO()
             CreateEchoAction.OnPlayAudioClick -> TODO()
@@ -48,8 +46,23 @@ class CreateEchoViewModel : ViewModel() {
             is CreateEchoAction.OnTopicTextChange -> TODO()
             is CreateEchoAction.OnTrackSizeAvailable -> TODO()
             is CreateEchoAction.OnAddTopicTextChange -> onAddTopicTextChange(action.text)
+            CreateEchoAction.OnDismissConfirmLeaveDialog -> onConfirmDismissLeaveDialog()
+            CreateEchoAction.OnGoBack,
+            CreateEchoAction.OnNavigateBackClick,
+            CreateEchoAction.OnCancelClick -> onShowConfirmLeaveDialog()
         }
     }
+
+    private fun onShowConfirmLeaveDialog() {
+        _state.update { it.copy(
+            showConfirmLeaveDialog = true
+        ) }
+    }
+
+    private fun onConfirmDismissLeaveDialog() =
+        _state.update { it.copy(
+            showConfirmLeaveDialog = false
+        ) }
 
     @OptIn(FlowPreview::class)
     private fun observeAddTopicText() {
