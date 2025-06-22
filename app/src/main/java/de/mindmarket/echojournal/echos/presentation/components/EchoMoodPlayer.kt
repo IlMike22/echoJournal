@@ -15,10 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.content.pm.ShortcutInfoCompat
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.EchoJournalTheme
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.MoodPrimary25
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.MoodPrimary35
@@ -27,7 +28,6 @@ import de.mindmarket.echojournal.core.presentation.util.formatMMSS
 import de.mindmarket.echojournal.echos.presentation.echos.models.PlaybackState
 import de.mindmarket.echojournal.echos.presentation.echos.models.TrackSizeInfo
 import de.mindmarket.echojournal.echos.presentation.models.MoodUi
-import java.lang.ProcessBuilder.Redirect.to
 import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -68,6 +68,8 @@ fun EchoMoodPlayer(
         "${durationPlayed.formatMMSS()}/${totalPlaybackDuration.formatMMSS()}"
     }
 
+    val density = LocalDensity.current
+
     Surface(
         shape = CircleShape,
         color = backgroundColor,
@@ -98,6 +100,17 @@ fun EchoMoodPlayer(
                     .weight(1f)
                     .padding(vertical = 10.dp, horizontal = 8.dp)
                     .fillMaxHeight()
+                    .onSizeChanged {
+                        if (it.width > 0) {
+                            onTrackSizeAvailable(
+                                TrackSizeInfo(
+                                    trackWidth = it.width.toFloat(),
+                                    barWidth = with(density) { amplitudeBarWidth.toPx() },
+                                    spacing = with(density) { amplitudeBarSpacing.toPx() }
+                                )
+                            )
+                        }
+                    }
             )
             Text(
                 text = formattedDurationText,
@@ -121,7 +134,7 @@ private fun EchoMoodPlayerPreview() {
     EchoJournalTheme {
         EchoMoodPlayer(
             moodUi = MoodUi.SAD,
-            playerProgress = {0.3f},
+            playerProgress = { 0.3f },
             playbackState = PlaybackState.PAUSED,
             totalPlaybackDuration = 250.seconds,
             durationPlayed = 125.seconds,
