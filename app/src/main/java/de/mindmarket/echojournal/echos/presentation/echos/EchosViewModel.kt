@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import de.mindmarket.echojournal.R
 import de.mindmarket.echojournal.core.presentation.designsystem.dropdowns.Selectable
 import de.mindmarket.echojournal.core.presentation.util.UiText
+import de.mindmarket.echojournal.echos.domain.audio.AudioPlayer
 import de.mindmarket.echojournal.echos.domain.recording.VoiceRecorder
 import de.mindmarket.echojournal.echos.presentation.echos.models.AudioCaptureMethod
 import de.mindmarket.echojournal.echos.presentation.echos.models.EchoFilterChip
@@ -24,16 +25,20 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class EchosViewModel(
-    private val voiceRecorder: VoiceRecorder
+    private val voiceRecorder: VoiceRecorder,
+    private val audioPlayer: AudioPlayer
 ) : ViewModel() {
     private val selectedMoodFilters = MutableStateFlow<List<MoodUi>>(emptyList())
     private val selectedTopicsFilters = MutableStateFlow<List<String>>(emptyList())
 
     private val _eventChannel = Channel<EchosEvent>()
     val events = _eventChannel.receiveAsFlow()
+
+    private val playingEchoId = MutableStateFlow<Int?>(null)
 
     private val _state = MutableStateFlow(EchosState())
     val state = _state.onStart {
@@ -105,24 +110,55 @@ class EchosViewModel(
                 toggleTopicFilter(action.topic)
             }
 
-
-
-            is EchosAction.OnPlayEchoClick -> {}
-            EchosAction.OnPauseAudioClick -> {
-
-            }
-
+            is EchosAction.OnPlayEchoClick -> onPlayEchoClick(action.echoId)
+            EchosAction.OnPauseAudioClick -> audioPlayer.pause()
             EchosAction.OnResumeRecordingClick -> resumeRecording()
-
             is EchosAction.OnTrackSizeAvailable -> {}
+
             EchosAction.OnAudioPermissionGranted -> {
-               startRecording(captureMethod = AudioCaptureMethod.STANDARD)
+                startRecording(captureMethod = AudioCaptureMethod.STANDARD)
             }
 
             EchosAction.OnPauseRecordingClick -> pauseRecording()
             EchosAction.OnCancelRecording -> cancelRecording()
             EchosAction.OnCompleteRecording -> stopRecording()
         }
+    }
+
+    private fun onPlayEchoClick(echoId: Int) {
+        val selectedEcho = _state.value.echos.values.flatten().first { it.id == echoId }
+        val activeTrack = audioPlayer.activeTrack.value
+        val isNewEcho = playingEchoId.value != echoId
+        val isSameEchoIsPlayingFromBeginning = echoId == playingEchoId.value && activeTrack != null
+                && activeTrack.durationPlayed == Duration.ZERO
+
+        when {
+            isNewEcho || isSameEchoIsPlayingFromBeginning -> {
+                playingEchoId.update { echoId }
+                audioPlayer.stop()
+                audioPlayer.play(
+                    filePath = selectedEcho.audioFilePath,
+                    onComplete = ::completePlayback
+                )
+            }
+
+            else -> audioPlayer.resume()
+        }
+    }
+
+    private fun completePlayback() {
+        _state.update {
+            it.copy(
+                echos = it.echos.mapValues { (_, echos) ->
+                    echos.map { echo ->
+                        echo.copy(
+                            playbackCurrentDuration = Duration.ZERO
+                        )
+                    }
+                }
+            )
+        }
+        playingEchoId.update { null }
     }
 
     private fun startRecording(captureMethod: AudioCaptureMethod) {
@@ -155,31 +191,39 @@ class EchosViewModel(
 
     private fun pauseRecording() {
         voiceRecorder.pause()
-        _state.update { it.copy(
-            recordingState = RecordingState.PAUSED
-        ) }
+        _state.update {
+            it.copy(
+                recordingState = RecordingState.PAUSED
+            )
+        }
     }
 
     private fun resumeRecording() {
         voiceRecorder.resume()
-        _state.update { it.copy(
-            recordingState = RecordingState.NORMAL_CAPTURE
-        ) }
+        _state.update {
+            it.copy(
+                recordingState = RecordingState.NORMAL_CAPTURE
+            )
+        }
     }
 
     private fun cancelRecording() {
-        _state.update { it.copy(
-            recordingState = RecordingState.NOT_RECORDING,
-            currentCaptureMethod = null
-        ) }
+        _state.update {
+            it.copy(
+                recordingState = RecordingState.NOT_RECORDING,
+                currentCaptureMethod = null
+            )
+        }
         voiceRecorder.cancel()
     }
 
     private fun stopRecording() {
         voiceRecorder.stop()
-        _state.update { it.copy(
-            recordingState = RecordingState.NOT_RECORDING
-        ) }
+        _state.update {
+            it.copy(
+                recordingState = RecordingState.NOT_RECORDING
+            )
+        }
 
         val recordingDetails = voiceRecorder.recordingDetails.value
         viewModelScope.launch {

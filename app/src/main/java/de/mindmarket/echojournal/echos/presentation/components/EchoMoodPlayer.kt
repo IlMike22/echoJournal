@@ -1,5 +1,6 @@
 package de.mindmarket.echojournal.echos.presentation.components
 
+import android.R.attr.end
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -115,6 +116,9 @@ fun EchoMoodPlayer(
             Text(
                 text = formattedDurationText,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontFeatureSettings = "tnum"
+                ),
                 modifier = Modifier
                     .padding(end = 8.dp)
             )
