@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Build
 import de.mindmarket.echojournal.BuildConfig
 import de.mindmarket.echojournal.app.di.appModule
+import de.mindmarket.echojournal.core.database.di.databaseModule
 import de.mindmarket.echojournal.echos.di.echosModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +27,8 @@ class EchoJournalApp: Application() {
             androidContext(this@EchoJournalApp)
             modules(
                 appModule,
-                echosModule
+                echosModule,
+                databaseModule
             )
         }
     }

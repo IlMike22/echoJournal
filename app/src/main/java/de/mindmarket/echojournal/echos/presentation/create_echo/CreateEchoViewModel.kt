@@ -7,6 +7,9 @@ import androidx.navigation.toRoute
 import de.mindmarket.echojournal.app.navigation.NavigationRoute
 import de.mindmarket.echojournal.core.presentation.designsystem.dropdowns.Selectable.Companion.asUnselectedItems
 import de.mindmarket.echojournal.echos.domain.audio.AudioPlayer
+import de.mindmarket.echojournal.echos.domain.echo.Echo
+import de.mindmarket.echojournal.echos.domain.echo.EchoDataSource
+import de.mindmarket.echojournal.echos.domain.echo.Mood
 import de.mindmarket.echojournal.echos.domain.recording.RecordingStorage
 import de.mindmarket.echojournal.echos.presentation.echos.models.PlaybackState
 import de.mindmarket.echojournal.echos.presentation.echos.models.TrackSizeInfo
@@ -30,12 +33,14 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
 import kotlin.time.Duration
 
 class CreateEchoViewModel(
     private val savedStateHandle: SavedStateHandle,
     val recordingStorage: RecordingStorage,
-    private val audioPlayer: AudioPlayer
+    private val audioPlayer: AudioPlayer,
+    private val echoDataSource: EchoDataSource
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<NavigationRoute.CreateEcho>()
     private val recordingDetails = route.toRecordingDetails()
@@ -44,17 +49,19 @@ class CreateEchoViewModel(
     val events = eventChannel.receiveAsFlow()
 
     private val restoredTopics = savedStateHandle.get<String>("topics")?.split(",")
-    private val _state = MutableStateFlow(CreateEchoState(
-        playbackTotalDuration = recordingDetails.duration,
-        title = savedStateHandle["title"] ?:"",
-        noteText = savedStateHandle["noteText"] ?:"",
-        topics = restoredTopics ?: emptyList(),
-        mood = savedStateHandle.get<String>("mood")?.let {
-            MoodUi.valueOf(it)
-        },
-        showMoodSelector = savedStateHandle.get<String>("mood") == null,
-        canSaveEcho = savedStateHandle.get<Boolean>("canSaveEcho") == true
-    ))
+    private val _state = MutableStateFlow(
+        CreateEchoState(
+            playbackTotalDuration = recordingDetails.duration,
+            title = savedStateHandle["title"] ?: "",
+            noteText = savedStateHandle["noteText"] ?: "",
+            topics = restoredTopics ?: emptyList(),
+            mood = savedStateHandle.get<String>("mood")?.let {
+                MoodUi.valueOf(it)
+            },
+            showMoodSelector = savedStateHandle.get<String>("mood") == null,
+            canSaveEcho = savedStateHandle.get<Boolean>("canSaveEcho") == true
+        )
+    )
 
     val state = _state
         .onStart {
@@ -160,17 +167,36 @@ class CreateEchoViewModel(
     }
 
     private fun onSaveClick() {
-        if (recordingDetails.filePath == null) {
+        if (recordingDetails.filePath == null || !state.value.canSaveEcho) {
             return
         }
         viewModelScope.launch {
-            val savedFilePath = recordingStorage.savePersistently(recordingDetails.filePath)
+            val savedFilePath = recordingStorage.savePersistently(
+                recordingDetails.filePath
+            )
+
             if (savedFilePath == null) {
                 eventChannel.send(CreateEchoEvent.FailedToSaveFile)
                 return@launch
             }
 
-            // TODO create Echo
+            val currentState = state.value
+
+            val echo = Echo(
+                mood = currentState.mood?.let {
+                    Mood.valueOf(it.name)
+                } ?: throw IllegalStateException("Mood cannot be null when saving the echo."),
+                title = currentState.title.trim(),
+                note = currentState.noteText.ifBlank { null },
+                topics = currentState.topics,
+                audioFilePath = savedFilePath,
+                audioPlaybackLength = currentState.playbackTotalDuration,
+                audioAmplitudes = recordingDetails.amplitudes,
+                recordedAt = Instant.now()
+            )
+
+            echoDataSource.insertEcho(echo)
+            eventChannel.send(CreateEchoEvent.EchoSuccessfullySaved)
         }
 
     }

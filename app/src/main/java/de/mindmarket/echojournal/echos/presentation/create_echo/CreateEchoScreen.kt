@@ -81,6 +81,10 @@ fun CreateEchoScreenRoot(
                 ).show()
                 onConfirmLeave()
             }
+
+            CreateEchoEvent.EchoSuccessfullySaved -> {
+                onConfirmLeave()
+            }
         }
     }
 
