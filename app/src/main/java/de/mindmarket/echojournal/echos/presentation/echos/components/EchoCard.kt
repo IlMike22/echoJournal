@@ -75,7 +75,7 @@ fun EchoCard(
 
             )
 
-            if (echoUi.note.isBlank().not()) {
+            if (!echoUi.note.isNullOrBlank()) {
                 EchoExpandableText(echoUi.note)
             }
 

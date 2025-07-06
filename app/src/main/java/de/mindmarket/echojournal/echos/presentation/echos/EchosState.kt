@@ -22,10 +22,10 @@ data class EchosState(
     val hasEchosRecorded: Boolean = false,
     val hasActiveTopicFilters: Boolean = false,
     val hasActiveMoodFilters: Boolean = false,
-    val isLoadingData: Boolean = false,
+    val isLoadingData: Boolean = true,
     val recordingState: RecordingState = RecordingState.NOT_RECORDING,
     val moods: List<Selectable<MoodUi>> = emptyList(),
-    val topics: List<Selectable<String>> = listOf("Love","Happy","Work").asUnselectedItems(),
+    val topics: List<Selectable<String>> = emptyList(),
     val moodChipContent: MoodChipContent = MoodChipContent(),
     val selectedEchoFilterChip: EchoFilterChip? = null,
     val topicChipTitle: UiText = UiText.StringResource(R.string.all_topics)

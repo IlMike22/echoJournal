@@ -5,7 +5,7 @@ import androidx.room.TypeConverter
 class FloatListTypeConverter {
     @TypeConverter
     fun fromList(values: List<Float>): String {
-        return values.joinToString("")
+        return values.joinToString(",")
     }
 
     @TypeConverter

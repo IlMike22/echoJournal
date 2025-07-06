@@ -10,7 +10,7 @@ data class EchoUi(
     val title: String,
     val mood: MoodUi,
     val recordedAt: Instant,
-    val note: String,
+    val note: String?,
     val topics: List<String>,
     val amplitudes: List<Float>,
     val playbackCurrentDuration: Duration = Duration.ZERO,
