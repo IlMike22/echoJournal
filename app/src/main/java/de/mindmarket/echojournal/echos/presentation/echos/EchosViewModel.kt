@@ -145,7 +145,7 @@ class EchosViewModel(
                 _state.update { it.copy(selectedEchoFilterChip = null) }
             }
 
-            EchosAction.OnSettingsClick -> {}
+            EchosAction.OnSettingsClick -> Unit
             is EchosAction.OnFilterByMoodClick -> {
                 toggleMoodFilter(action.moodUi)
             }

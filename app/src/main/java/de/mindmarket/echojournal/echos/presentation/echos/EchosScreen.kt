@@ -43,6 +43,7 @@ import timber.log.Timber
 @Composable
 fun EchosScreenRoot(
     onNavigateToCreateEcho: (RecordingDetails) -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: EchosViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -81,7 +82,13 @@ fun EchosScreenRoot(
 
     EchosScreen(
         state = state,
-        onAction = viewModel::onAction
+        onAction = { action ->
+            when (action) {
+                EchosAction.OnSettingsClick -> onNavigateToSettings()
+                else -> Unit
+            }
+            viewModel::onAction
+        }
     )
 }
 

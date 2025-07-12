@@ -10,6 +10,7 @@ import de.mindmarket.echojournal.echos.domain.recording.RecordingStorage
 import de.mindmarket.echojournal.echos.domain.recording.VoiceRecorder
 import de.mindmarket.echojournal.echos.presentation.create_echo.CreateEchoViewModel
 import de.mindmarket.echojournal.echos.presentation.echos.EchosViewModel
+import de.mindmarket.echojournal.echos.presentation.settings.SettingsViewModel
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
@@ -23,4 +24,5 @@ val echosModule = module {
 
     viewModelOf(::EchosViewModel)
     viewModelOf(::CreateEchoViewModel)
+    viewModelOf(::SettingsViewModel)
 }
