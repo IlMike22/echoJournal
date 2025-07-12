@@ -6,6 +6,7 @@ import de.mindmarket.echojournal.R
 import de.mindmarket.echojournal.core.presentation.designsystem.dropdowns.Selectable
 import de.mindmarket.echojournal.core.presentation.util.UiText
 import de.mindmarket.echojournal.echos.domain.audio.AudioPlayer
+import de.mindmarket.echojournal.echos.domain.echo.Echo
 import de.mindmarket.echojournal.echos.domain.echo.EchoDataSource
 import de.mindmarket.echojournal.echos.domain.recording.VoiceRecorder
 import de.mindmarket.echojournal.echos.presentation.echos.models.AudioCaptureMethod
@@ -64,8 +65,9 @@ class EchosViewModel(
         EchosState()
     )
 
-    private val echos = echosDataSource
+    private val filteredEchos = echosDataSource
         .observeEchos()
+        .filterByMoodAndTopics()
         .onEach { echos ->
             _state.update {
                 it.copy(
@@ -171,7 +173,7 @@ class EchosViewModel(
 
     private fun observeEchos() {
         combine(
-            echos,
+            filteredEchos,
             playingEchoId,
             audioPlayer.activeTrack
         ) { echos, playingEchoId, activeTrack ->
@@ -328,15 +330,16 @@ class EchosViewModel(
 
     private fun observeFilters() {
         combine(
+            echosDataSource.observeTopics(),
             selectedTopicsFilters,
             selectedMoodFilters
-        ) { selectedTopics, selectedMoods ->
+        ) { allTopics, selectedTopics, selectedMoods ->
             _state.update {
                 it.copy(
-                    topics = it.topics.map { selectableTopic ->
+                    topics = allTopics.map { topic ->
                         Selectable(
-                            item = selectableTopic.item,
-                            selected = selectedTopics.contains(selectableTopic.item)
+                            item = topic,
+                            selected = selectedTopics.contains(topic)
                         )
                     },
                     moods = MoodUi.entries.map {
@@ -400,6 +403,27 @@ class EchosViewModel(
                         uiTexts = moodNames.take(2).toTypedArray()
                     )
                 )
+            }
+        }
+    }
+
+    private fun Flow<List<Echo>>.filterByMoodAndTopics(): Flow<List<Echo>> {
+        return combine(
+            this,
+            selectedMoodFilters,
+            selectedTopicsFilters
+        ) { echos, moodFilters, topicFilters ->
+            echos.filter { echo ->
+                val matchesMoodFilter = moodFilters
+                    .takeIf { it.isNotEmpty() }
+                    ?.any { it.name == echo.mood.name }
+                    ?: true
+                val matchesTopicFilter = topicFilters
+                    .takeIf { it.isNotEmpty() }
+                    ?.any { it in echo.topics }
+                    ?: true
+
+                matchesTopicFilter && matchesMoodFilter
             }
         }
     }
