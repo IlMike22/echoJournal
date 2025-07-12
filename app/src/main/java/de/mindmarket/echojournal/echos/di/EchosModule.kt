@@ -1,13 +1,16 @@
 package de.mindmarket.echojournal.echos.di
 
+import androidx.datastore.core.DataStore
 import de.mindmarket.echojournal.echos.data.audio.AndroidAudioPlayer
 import de.mindmarket.echojournal.echos.data.echo.RoomEchoDataSource
 import de.mindmarket.echojournal.echos.data.recording.AndroidVoiceRecorder
 import de.mindmarket.echojournal.echos.data.recording.InternalRecordingStorage
+import de.mindmarket.echojournal.echos.data.settings.DataStoreSettings
 import de.mindmarket.echojournal.echos.domain.audio.AudioPlayer
 import de.mindmarket.echojournal.echos.domain.echo.EchoDataSource
 import de.mindmarket.echojournal.echos.domain.recording.RecordingStorage
 import de.mindmarket.echojournal.echos.domain.recording.VoiceRecorder
+import de.mindmarket.echojournal.echos.domain.settings.SettingsPreferences
 import de.mindmarket.echojournal.echos.presentation.create_echo.CreateEchoViewModel
 import de.mindmarket.echojournal.echos.presentation.echos.EchosViewModel
 import de.mindmarket.echojournal.echos.presentation.settings.SettingsViewModel
@@ -21,6 +24,7 @@ val echosModule = module {
     singleOf(::InternalRecordingStorage).bind(RecordingStorage::class)
     singleOf(::AndroidAudioPlayer).bind(AudioPlayer::class)
     singleOf(::RoomEchoDataSource) bind EchoDataSource::class
+    singleOf(::DataStoreSettings) bind SettingsPreferences::class
 
     viewModelOf(::EchosViewModel)
     viewModelOf(::CreateEchoViewModel)
