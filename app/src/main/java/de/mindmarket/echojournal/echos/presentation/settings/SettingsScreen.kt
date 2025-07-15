@@ -27,7 +27,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.mindmarket.echojournal.R
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.EchoJournalTheme
 import de.mindmarket.echojournal.core.presentation.designsystem.theme.bgGradient
-import de.mindmarket.echojournal.echos.presentation.create_echo.CreateEchoAction
+import de.mindmarket.echojournal.echos.presentation.models.MoodUi
+import de.mindmarket.echojournal.echos.presentation.settings.components.MoodCard
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -44,7 +45,7 @@ fun SettingsScreenRoot(
                 SettingsAction.OnBackClick -> onGoBack()
                 else -> Unit
             }
-            viewModel::onAction
+            viewModel.onAction(action)
         }
     )
 }
@@ -92,7 +93,10 @@ fun SettingsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
+            MoodCard(
+                selectedMood = state.selectedMood,
+                onMoodClick = {onAction(SettingsAction.OnMoodClick(it))}
+            )
         }
     }
 }
@@ -102,7 +106,9 @@ fun SettingsScreen(
 private fun SettingsScreenPreview() {
     EchoJournalTheme {
         SettingsScreen(
-            state = SettingsState(),
+            state = SettingsState(
+                selectedMood = MoodUi.EXCITED
+            ),
             onAction = {}
         )
     }

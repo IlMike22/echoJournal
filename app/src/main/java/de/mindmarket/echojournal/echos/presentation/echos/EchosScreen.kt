@@ -87,7 +87,7 @@ fun EchosScreenRoot(
                 EchosAction.OnSettingsClick -> onNavigateToSettings()
                 else -> Unit
             }
-            viewModel::onAction
+            viewModel.onAction(action)
         }
     )
 }

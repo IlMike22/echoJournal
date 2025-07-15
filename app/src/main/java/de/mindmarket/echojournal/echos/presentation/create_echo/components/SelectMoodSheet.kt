@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import de.mindmarket.echojournal.R
 import de.mindmarket.echojournal.core.presentation.designsystem.buttons.PrimaryButton
 import de.mindmarket.echojournal.core.presentation.designsystem.buttons.SecondaryButton
+import de.mindmarket.echojournal.echos.presentation.components.MoodSelectorRow
 import de.mindmarket.echojournal.echos.presentation.models.MoodUi
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,21 +58,11 @@ fun SelectMoodSheet(
                 style = MaterialTheme.typography.titleMedium
             )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.SpaceBetween
+            MoodSelectorRow(
+                selectedMood = selectedMood,
+                onMoodClick = onMoodClick,
+                modifier = Modifier.fillMaxWidth()
             )
-            {
-                allMoods.forEach { mood ->
-                    MoodItem(
-                        isSelected = mood == selectedMood,
-                        mood = mood,
-                        onClick = { onMoodClick(mood) }
-                    )
-                }
-            }
 
             Row(
                 modifier = Modifier
@@ -98,41 +89,5 @@ fun SelectMoodSheet(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun MoodItem(
-    isSelected: Boolean,
-    mood: MoodUi,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .width(64.dp)
-            .clickable(
-                indication = null,
-                interactionSource = null,
-                onClick = onClick
-            ),
-
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Image(
-            imageVector = if (isSelected) ImageVector.vectorResource(mood.iconSet.fill)
-            else ImageVector.vectorResource(mood.iconSet.outline),
-            contentDescription = mood.title.asString(),
-            modifier = Modifier
-                .height(40.dp),
-            contentScale = ContentScale.FillHeight
-        )
-
-        Text(
-            text = mood.title.asString(),
-            style = MaterialTheme.typography.labelMedium,
-            color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
-        )
     }
 }
