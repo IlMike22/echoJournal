@@ -41,7 +41,8 @@ fun MoodCard(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
         MoodSelectorRow(
             selectedMood = selectedMood,
             onMoodClick = onMoodClick,
