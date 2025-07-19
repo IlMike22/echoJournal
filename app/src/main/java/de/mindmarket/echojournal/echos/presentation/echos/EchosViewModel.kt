@@ -1,6 +1,5 @@
 package de.mindmarket.echojournal.echos.presentation.echos
 
-import androidx.compose.runtime.currentRecomposeScope
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,7 +23,6 @@ import de.mindmarket.echojournal.echos.presentation.util.toEchoUi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -324,7 +322,18 @@ class EchosViewModel(
             if (recordingDetails.duration < MIN_RECORD_DURATION) {
                 _eventChannel.send(EchosEvent.RecordingTooShort)
             } else {
-                _eventChannel.send(EchosEvent.OnDoneRecording(recordingDetails))
+                _eventChannel.send(EchosEvent.OnDoneRecording(
+                    details = recordingDetails.copy(
+                        // Arbitrary track dimensions to not make the app crash
+                        // when navigating and passing the amplitudes as an argument.
+                        amplitudes = AmplitudeNormalizer.normalize(
+                            sourceAmplitudes = recordingDetails.amplitudes,
+                            trackWidth = 10_000f,
+                            barWidth = 20f,
+                            spacing = 15f
+                        )
+                    )
+                ))
             }
         }
     }
