@@ -1,5 +1,7 @@
 package de.mindmarket.echojournal.echos.presentation.echos
 
+import androidx.compose.runtime.currentRecomposeScope
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.mindmarket.echojournal.R
@@ -22,6 +24,7 @@ import de.mindmarket.echojournal.echos.presentation.util.toEchoUi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -44,7 +47,8 @@ import kotlin.time.Duration.Companion.seconds
 class EchosViewModel(
     private val voiceRecorder: VoiceRecorder,
     private val audioPlayer: AudioPlayer,
-    private val echosDataSource: EchoDataSource
+    private val echosDataSource: EchoDataSource,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val selectedMoodFilters = MutableStateFlow<List<MoodUi>>(emptyList())
     private val selectedTopicsFilters = MutableStateFlow<List<String>>(emptyList())
@@ -59,11 +63,13 @@ class EchosViewModel(
     val state = _state.onStart {
         observeFilters()
         observeEchos()
+        fetchNavigationArgs()
     }.stateIn(
         scope = viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
         EchosState()
     )
+
 
     private val filteredEchos = echosDataSource
         .observeEchos()
@@ -169,6 +175,17 @@ class EchosViewModel(
             EchosAction.OnCancelRecording -> cancelRecording()
             EchosAction.OnCompleteRecording -> stopRecording()
         }
+    }
+
+    private fun fetchNavigationArgs() {
+        val startRecording = savedStateHandle["startRecording"] ?:false
+        if (startRecording) {
+            _state.update { it.copy(
+                currentCaptureMethod = AudioCaptureMethod.STANDARD
+            ) }
+            requestAudioPermission()
+        }
+
     }
 
     private fun observeEchos() {
